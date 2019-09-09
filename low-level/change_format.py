@@ -36,7 +36,7 @@ def rgb_to_hsv(image):
 
         # combine hue, saturation, value
 
-        _image = [hue, saturation, value]
+        _image = [hue, sat, val]
 
         # get transpose
         _image = np.array(_image)
