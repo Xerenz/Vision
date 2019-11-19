@@ -72,6 +72,8 @@ def connect_to_server(SERVER_ADDRESS):
 	#############  Add your Code here   ###############
 
 	
+	sock = socket.socket()
+	sock.connect(SERVER_ADDRESS)
 
 	###################################################
 
@@ -109,8 +111,16 @@ def send_to_receive_from_server(sock, shortestPath):
 	recv_data = ''
 
 	#############  Add your Code here   ###############
+	sent_data = '#' + str(shortestPath) + '#'
+
+	sock.sendall(sent_data.encode())
 
 	
+	# Look for the response
+	# amount_received = 0
+	recv_data = sock.recv(1024) # earlier 128
+	recv_data = recv_data.decode()
+	# amount_received += len(recv_data)
 
 	###################################################
 
@@ -183,7 +193,7 @@ if __name__ == '__main__':
 	curr_dir_path = os.getcwd()
 	img_dir_path = curr_dir_path + '/../task_1b_images/'				# path to directory of 'task_1c_images'
 
-	file_num = 0
+	file_num = 1
 	img_file_path = img_dir_path + 'maze0' + str(file_num) + '.jpg'		# path to 'maze00.jpg' image file
 
 	# Importing task_1a and image_enhancer script
@@ -239,6 +249,7 @@ if __name__ == '__main__':
 		final_point = ((no_cells_height-1),(no_cells_width-1))			# end point coordinates of maze
 
 		try:
+
 			shortestPath = task_1a.solveMaze(original_binary_img, initial_point, final_point, no_cells_height, no_cells_width)
 
 			if len(shortestPath) > 2:
@@ -470,3 +481,5 @@ if __name__ == '__main__':
 	except KeyboardInterrupt:
 		print('\nClosing Socket')
 		sock.close()
+
+
