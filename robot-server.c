@@ -18,8 +18,8 @@
 */
 
 /*
-* Team ID:			[ Team-ID ]
-* Author List:		[ Names of team members worked on this file separated by Comma: Name1, Name2, ... ]
+# Team ID:			[ 3478 ]
+# Author List:		[ Jyothis P, Arun Padmanabhan, Ebin Santy, Jithin K Satheesh  ]
 * Filename:			robot-server.c
 * Functions:		socket_create, receive_from_send_to_client
 * 					[ Comma separated list of functions in this file ]
@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h> 
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -78,18 +79,27 @@ int socket_create(struct sockaddr_in dest_addr, struct sockaddr_in source_addr){
 
 	int addr_family;
 	int ip_protocol;
-
+	int opt = 1;
+	int new_socket;
 	dest_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	dest_addr.sin_family = AF_INET;
 	dest_addr.sin_port = htons(SERVER_PORT);
 	addr_family = AF_INET;
+
+    int addrlen = sizeof(dest_addr); 
 	ip_protocol = IPPROTO_IP;
 
 	int my_sock;
 
+	my_sock = socket(addr_family, SOCK_STREAM, ip_protocol);
 
-
-	return my_sock;
+	setsockopt(my_sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
+	bind(my_sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+	listen(my_sock, 3);
+	printf("Server running at 3333\n");
+	new_socket = accept(my_sock, (struct sockaddr *)&dest_addr, (socklen_t*)&addrlen);
+	printf("Connection established with the client.\n");
+	return new_socket;
 }
 
 
@@ -104,6 +114,16 @@ int socket_create(struct sockaddr_in dest_addr, struct sockaddr_in source_addr){
 */
 int receive_from_send_to_client(int sock){
 
+    char *hello = "@(4,7)@"; 
+    int valread;
+    valread = read( sock , rx_buffer, RX_BUFFER_SIZE); 
+	// printf("%d\n",valread ); 				
+    if (valread > 0)
+    {
+    	printf("%s\n", rx_buffer);
+	    send(sock , hello , strlen(hello) , 0 ); 
+	    printf("obstacle sent\n");    	
+    }
 	return 0;
 
 }
@@ -153,4 +173,3 @@ int main() {
 
 	return 0;
 }
-
